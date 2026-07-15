@@ -7,10 +7,11 @@ import {
   deleteDraftAsync,
   setCurrentDraft,
   fetchDraftsAsync,
+  updateDraft,  // ✅ ADD THIS
 } from '../../features/drafts/draftsSlice';
 import './DraftManager.css';
 
-const DraftManager = () => {
+const DraftManager = ({ onLoadDraft }) => {  // ✅ ADD PROPS
   const dispatch = useDispatch();
   const drafts = useSelector(selectAllDrafts);
   const status = useSelector(selectDraftStatus);
@@ -28,12 +29,13 @@ const DraftManager = () => {
   };
 
   const handleEdit = (draft) => {
+    // ✅ LOAD DRAFT INTO COMPOSER
     dispatch(setCurrentDraft(draft));
-    alert(`📝 Edit draft: ${draft.text.substring(0, 30)}...`);
-  };
-
-  const handleLoad = (draft) => {
-    alert(`📂 Loading draft: ${draft.text.substring(0, 30)}...`);
+    
+    // ✅ CALL THE onLoadDraft FUNCTION FROM PARENT
+    if (onLoadDraft) {
+      onLoadDraft(draft);
+    }
   };
 
   const filteredDrafts = drafts.filter(draft => {
@@ -116,13 +118,7 @@ const DraftManager = () => {
               <div className="draft-actions">
                 <button
                   className="btn-sm btn-load"
-                  onClick={() => handleLoad(draft)}
-                >
-                  📂 Load
-                </button>
-                <button
-                  className="btn-sm btn-edit"
-                  onClick={() => handleEdit(draft)}
+                  onClick={() => handleEdit(draft)}  // ✅ EDIT NOW LOADS DRAFT
                 >
                   ✏️ Edit
                 </button>

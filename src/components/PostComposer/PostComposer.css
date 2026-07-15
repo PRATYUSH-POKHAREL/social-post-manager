@@ -1,3 +1,7 @@
+/* ============================================
+   POST COMPOSER - MAIN STYLES
+   ============================================ */
+
 .post-composer {
   position: relative;
   padding: 24px;
@@ -5,6 +9,10 @@
   border-radius: 12px;
   border: 1px solid #E5E7EB;
 }
+
+/* ============================================
+   SUCCESS TOAST
+   ============================================ */
 
 .success-toast {
   position: fixed;
@@ -21,9 +29,19 @@
 }
 
 @keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }
+
+/* ============================================
+   COMPOSER HEADER
+   ============================================ */
 
 .composer-header {
   display: flex;
@@ -48,6 +66,56 @@
   font-weight: 600;
   font-size: 0.9rem;
 }
+
+/* ============================================
+   EDITING BANNER (FIX 5)
+   ============================================ */
+
+.editing-banner {
+  background: #FFFBEB;
+  border: 1px solid #F59E0B;
+  padding: 10px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #92400E;
+  font-size: 0.95rem;
+  animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.btn-cancel-edit {
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+  padding: 4px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel-edit:hover {
+  background: #FEE2E2;
+  transform: scale(1.05);
+}
+
+/* ============================================
+   PLATFORM SELECTOR
+   ============================================ */
 
 .platform-selector {
   margin-bottom: 24px;
@@ -91,6 +159,14 @@
   background: #EFF6FF;
 }
 
+.platform-icon {
+  font-size: 1.1rem;
+}
+
+/* ============================================
+   TEXT AREA
+   ============================================ */
+
 .text-area-container {
   margin-bottom: 20px;
 }
@@ -132,6 +208,16 @@
   font-weight: 500;
 }
 
+.error-text {
+  color: #DC2626;
+  font-weight: 600;
+}
+
+.warning-text {
+  color: #F59E0B;
+  font-weight: 500;
+}
+
 .char-progress-bar {
   width: 100%;
   height: 4px;
@@ -155,11 +241,29 @@
   background: #DC2626;
 }
 
+/* ============================================
+   MEDIA UPLOADER
+   ============================================ */
+
 .media-uploader {
   margin-bottom: 20px;
   padding: 16px;
   border: 1px solid #E5E7EB;
   border-radius: 8px;
+}
+
+.uploader-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-weight: 500;
+  color: #1A1A1A;
+}
+
+.uploader-limit {
+  color: #6B7280;
+  font-weight: 400;
+  font-size: 0.9rem;
 }
 
 .upload-area {
@@ -198,10 +302,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .remove-photo:hover {
   background: #DC2626;
+  transform: scale(1.1);
 }
 
 .drop-zone {
@@ -226,6 +332,41 @@
   background: #EFF6FF;
 }
 
+.drop-zone-content {
+  text-align: center;
+  padding: 8px;
+}
+
+.drop-icon {
+  font-size: 1.5rem;
+  display: block;
+}
+
+.drop-zone-content p {
+  margin: 4px 0;
+  font-size: 0.8rem;
+  color: #1A1A1A;
+}
+
+.drop-hint {
+  font-size: 0.7rem;
+  color: #6B7280;
+}
+
+.uploader-stats {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  color: #6B7280;
+}
+
+.photo-count {
+  font-weight: 500;
+}
+
+/* ============================================
+   VALIDATION PANEL
+   ============================================ */
+
 .validation-panel {
   padding: 16px;
   border-radius: 8px;
@@ -243,6 +384,37 @@
   border-color: #FECACA;
 }
 
+.validation-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.validation-icon {
+  font-size: 1.1rem;
+}
+
+.validation-title {
+  font-size: 0.95rem;
+  color: #1A1A1A;
+}
+
+.validation-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.validation-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 0.9rem;
+}
+
 .validation-item.error {
   color: #DC2626;
 }
@@ -250,6 +422,41 @@
 .validation-item.warning {
   color: #F59E0B;
 }
+
+.item-icon {
+  font-size: 0.9rem;
+}
+
+.validation-stats {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #E5E7EB;
+}
+
+.stat-item {
+  font-size: 0.85rem;
+  color: #6B7280;
+}
+
+.stat-label {
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.stat-value {
+  font-weight: 600;
+  color: #1A1A1A;
+}
+
+.stat-value.error {
+  color: #DC2626;
+}
+
+/* ============================================
+   COMPOSER ACTIONS (BUTTONS)
+   ============================================ */
 
 .composer-actions {
   display: flex;
@@ -278,6 +485,7 @@
 .btn-primary:hover:not(:disabled) {
   background-color: #1D4ED8;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 }
 
 .btn-primary:disabled {
@@ -292,22 +500,118 @@
   border: 1px solid #E5E7EB;
 }
 
+.btn-secondary:hover:not(:disabled) {
+  background-color: #E5E7EB;
+}
+
 .btn-danger {
   background-color: #FEF2F2;
   color: #DC2626;
   border: 1px solid #FECACA;
 }
 
+.btn-danger:hover:not(:disabled) {
+  background-color: #FEE2E2;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   COMPOSER FOOTER
+   ============================================ */
+
+.composer-footer {
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.composer-footer.error {
+  background: #FEF2F2;
+  color: #DC2626;
+  border: 1px solid #FECACA;
+}
+
+.composer-footer.success {
+  background: #F0FDF4;
+  color: #16A34A;
+  border: 1px solid #86EFAC;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
 @media (max-width: 768px) {
   .post-composer {
     padding: 16px;
   }
-  
+
+  .composer-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .composer-header h2 {
+    font-size: 1.2rem;
+  }
+
+  .platform-buttons {
+    gap: 6px;
+  }
+
+  .platform-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
   .composer-actions {
     flex-direction: column;
+    gap: 8px;
   }
-  
+
   .btn {
     width: 100%;
+    justify-content: center;
+  }
+
+  .upload-area {
+    flex-direction: column;
+  }
+
+  .photo-thumbnail {
+    width: 100%;
+    height: 150px;
+  }
+
+  .drop-zone {
+    width: 100%;
+    height: 100px;
+  }
+
+  .validation-stats {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  /* Editing Banner Responsive */
+  .editing-banner {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 8px 12px;
+  }
+
+  .btn-cancel-edit {
+    width: 100%;
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
 }

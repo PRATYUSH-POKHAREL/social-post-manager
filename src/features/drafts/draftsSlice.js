@@ -38,7 +38,7 @@ const initialState = {
   items: loadDraftsFromStorage(),
   status: 'idle',
   error: null,
-  currentDraft: null,
+  currentDraft: null,  // ✅ ADD THIS
 };
 
 const draftsSlice = createSlice({
@@ -55,12 +55,16 @@ const draftsSlice = createSlice({
       state.items.push(newDraft);
       localStorage.setItem('drafts', JSON.stringify(state.items));
     },
+    // ✅ UPDATE DRAFT ACTION
     updateDraft: (state, action) => {
       const { id, updates } = action.payload;
-      const draft = state.items.find(d => d.id === id);
-      if (draft) {
-        Object.assign(draft, updates);
-        draft.updatedAt = new Date().toISOString();
+      const draftIndex = state.items.findIndex(draft => draft.id === id);
+      if (draftIndex !== -1) {
+        state.items[draftIndex] = {
+          ...state.items[draftIndex],
+          ...updates,
+          updatedAt: new Date().toISOString(),
+        };
         localStorage.setItem('drafts', JSON.stringify(state.items));
       }
     },
@@ -68,9 +72,11 @@ const draftsSlice = createSlice({
       state.items = state.items.filter(draft => draft.id !== action.payload);
       localStorage.setItem('drafts', JSON.stringify(state.items));
     },
+    // ✅ SET CURRENT DRAFT (for editing)
     setCurrentDraft: (state, action) => {
       state.currentDraft = action.payload;
     },
+    // ✅ CLEAR CURRENT DRAFT
     clearCurrentDraft: (state) => {
       state.currentDraft = null;
     },
@@ -92,16 +98,18 @@ const draftsSlice = createSlice({
   },
 });
 
+// ✅ EXPORT SELECTORS
 export const selectAllDrafts = (state) => state.drafts.items;
 export const selectDraftStatus = (state) => state.drafts.status;
-export const selectCurrentDraft = (state) => state.drafts.currentDraft;
+export const selectCurrentDraft = (state) => state.drafts.currentDraft;  // ✅ NEW
 
+// ✅ EXPORT ACTIONS
 export const { 
   addDraft, 
-  updateDraft, 
+  updateDraft,   // ✅ NEW
   deleteDraft, 
-  setCurrentDraft, 
-  clearCurrentDraft 
+  setCurrentDraft,  // ✅ NEW
+  clearCurrentDraft  // ✅ NEW
 } = draftsSlice.actions;
 
 export default draftsSlice.reducer;

@@ -9,9 +9,16 @@ import {
   setValidationErrors,
   setValidationWarnings,
   clearValidation,
+  selectPlatform,
 } from '../../features/platforms/platformsSlice';
 import { addPost, savePostAsync } from '../../features/posts/postsSlice';
-import { addDraft, saveDraftAsync } from '../../features/drafts/draftsSlice';
+import { 
+  addDraft, 
+  saveDraftAsync,
+  updateDraft,
+  clearCurrentDraft,
+  selectCurrentDraft
+} from '../../features/drafts/draftsSlice';
 import { validatePost } from '../../utils/validators';
 import PlatformSelector from './PlatformSelector';
 import TextArea from './TextArea';
@@ -25,11 +32,14 @@ const PostComposer = () => {
   const platformConfig = useSelector(selectPlatformConfig);
   const errors = useSelector(selectValidationErrors);
   const warnings = useSelector(selectValidationWarnings);
+  const currentDraft = useSelector(selectCurrentDraft);
 
   const [text, setText] = useState('');
   const [photos, setPhotos] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingDraftId, setEditingDraftId] = useState(null);
   const [validationResult, setValidationResult] = useState({
     errors: [],
     warnings: [],
@@ -39,6 +49,23 @@ const PostComposer = () => {
     hashtagCount: 0,
     photoCount: 0,
   });
+
+  // Load draft when currentDraft changes
+  useEffect(() => {
+    if (currentDraft) {
+      setText(currentDraft.text || '');
+      setPhotos(currentDraft.photos || []);
+      setIsEditing(true);
+      setEditingDraftId(currentDraft.id);
+      
+      if (currentDraft.platform) {
+        dispatch(selectPlatform(currentDraft.platform));
+      }
+      
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
+  }, [currentDraft, dispatch]);
 
   // Run validation only when text, photos, or platform changes
   useEffect(() => {
@@ -56,6 +83,7 @@ const PostComposer = () => {
     setPhotos(newPhotos);
   }, []);
 
+  // ✅ FIXED: Save or Update Draft (only once!)
   const handleSaveDraft = useCallback(() => {
     if (!text && photos.length === 0) {
       alert('Please add some content before saving');
@@ -68,13 +96,31 @@ const PostComposer = () => {
       platform: selectedPlatform,
       status: 'draft',
     };
-    
-    dispatch(addDraft(draftData));
-    dispatch(saveDraftAsync(draftData));
-    
-    setShowSuccess(true);
-    setTimeout(() => setShowSuccess(false), 3000);
-  }, [text, photos, selectedPlatform, dispatch]);
+
+    if (isEditing && editingDraftId) {
+      // ✅ UPDATE EXISTING DRAFT
+      dispatch(updateDraft({
+        id: editingDraftId,
+        updates: draftData
+      }));
+      
+      setIsEditing(false);
+      setEditingDraftId(null);
+      dispatch(clearCurrentDraft());
+      
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } else {
+      // ✅ SAVE NEW DRAFT (ONLY ONCE!)
+      dispatch(addDraft(draftData));
+      
+      // ❌ REMOVED duplicate saveDraftAsync
+      // dispatch(saveDraftAsync(draftData));
+      
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
+  }, [text, photos, selectedPlatform, isEditing, editingDraftId, dispatch]);
 
   const handlePublish = useCallback(async () => {
     if (!validationResult.isValid) {
@@ -97,41 +143,71 @@ const PostComposer = () => {
       await dispatch(savePostAsync(postData)).unwrap();
       dispatch(addPost(postData));
       
+      if (isEditing && editingDraftId) {
+        dispatch(updateDraft({
+          id: editingDraftId,
+          updates: { status: 'published' }
+        }));
+        setIsEditing(false);
+        setEditingDraftId(null);
+        dispatch(clearCurrentDraft());
+      }
+      
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
       
-      setText('');
-      setPhotos([]);
-      dispatch(clearValidation());
+      clearForm();
     } catch (error) {
       alert('❌ Failed to publish: ' + error.message);
     } finally {
       setIsSubmitting(false);
     }
-  }, [text, photos, selectedPlatform, validationResult.isValid, dispatch]);
+  }, [text, photos, selectedPlatform, validationResult.isValid, isEditing, editingDraftId, dispatch]);
+
+  const clearForm = useCallback(() => {
+    setText('');
+    setPhotos([]);
+    dispatch(clearValidation());
+    setIsEditing(false);
+    setEditingDraftId(null);
+    dispatch(clearCurrentDraft());
+  }, [dispatch]);
 
   const handleReset = useCallback(() => {
     if (window.confirm('Clear all content?')) {
-      setText('');
-      setPhotos([]);
-      dispatch(clearValidation());
+      clearForm();
     }
-  }, [dispatch]);
+  }, [clearForm]);
+
+  const handleCancelEdit = useCallback(() => {
+    if (window.confirm('Cancel editing? Unsaved changes will be lost.')) {
+      clearForm();
+    }
+  }, [clearForm]);
 
   return (
     <div className="post-composer">
       {showSuccess && (
         <div className="success-toast">
-          ✅ {isSubmitting ? 'Published successfully!' : 'Draft saved!'}
+          ✅ {isEditing ? 'Draft updated successfully!' : isSubmitting ? 'Published successfully!' : 'Draft saved!'}
         </div>
       )}
 
       <div className="composer-header">
-        <h2>✍️ Create New Post</h2>
+        <h2>✍️ {isEditing ? 'Edit Draft' : 'Create New Post'}</h2>
         <span className="platform-badge" style={{ backgroundColor: platformConfig.color }}>
           {platformConfig.icon} {platformConfig.name}
         </span>
       </div>
+
+      {isEditing && (
+        <div className="editing-banner">
+          ✏️ Editing draft: "{text.substring(0, 50)}..."
+          <button className="btn-cancel-edit" onClick={handleCancelEdit}>
+            Cancel
+          </button>
+        </div>
+      )}
 
       <PlatformSelector />
 
@@ -166,7 +242,7 @@ const PostComposer = () => {
           onClick={handleSaveDraft}
           disabled={!text && photos.length === 0}
         >
-          💾 Save Draft
+          {isEditing ? '💾 Update Draft' : '💾 Save Draft'}
         </button>
         
         <button 
@@ -181,7 +257,7 @@ const PostComposer = () => {
           onClick={handlePublish}
           disabled={!validationResult.isValid || isSubmitting}
         >
-          {isSubmitting ? '⏳ Publishing...' : '📤 Publish'}
+          {isSubmitting ? '⏳ Publishing...' : isEditing ? '📤 Publish & Clear' : '📤 Publish'}
         </button>
       </div>
 
@@ -192,7 +268,7 @@ const PostComposer = () => {
       )}
       {validationResult.isValid && text.length > 0 && (
         <div className="composer-footer success">
-          ✅ Ready to publish!
+          ✅ Ready to {isEditing ? 'update' : 'publish'}!
         </div>
       )}
     </div>
